@@ -2,8 +2,17 @@ const chrome = require('chrome-aws-lambda');
 const puppeteer = require('puppeteer-core');
 const wait = require('waait');
 
+async function getOptions() {
+  return {
+    product: 'chrome',
+    args: chrome.args,
+    executablePath: await chrome.executablePath,
+    headless: chrome.headless,
+  };
+}
 
 async function getScreenshot() {
+  const options = await getOptions(isDev);
   const browser = await puppeteer.launch(options);
   const page = await browser.newPage();
   await page.setViewport({ width: 1200, height: 630, deviceScaleFactor: 1.5 });
