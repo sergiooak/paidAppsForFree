@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "chrome-aws-lambda": "^2.1.1",
+    "puppeteer": "^2.1.1",
     "puppeteer-core": "^2.1.1",
     "waait": "^1.0.5"
   }

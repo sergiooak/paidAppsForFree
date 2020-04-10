@@ -1,6 +1,6 @@
 [build]
   command = "yarn generate"
-  functions = "./functions/"
+  functions = "functions/"
 
 [dev]
   command='yarn dev'

@@ -1,36 +1,37 @@
-const chrome = require('chrome-aws-lambda');
-const puppeteer = require('puppeteer-core');
-const wait = require('waait');
+const chromium = require('chrome-aws-lambda');
 
-async function getOptions() {
-  return {
-    product: 'chrome',
-    args: chrome.args,
-    executablePath: await chrome.executablePath,
-    headless: chrome.headless,
-  };
-}
-
-async function getScreenshot() {
-  const options = await getOptions(isDev);
-  const browser = await puppeteer.launch(options);
-  const page = await browser.newPage();
-  await page.setViewport({ width: 1200, height: 630, deviceScaleFactor: 1.5 });
-  await page.goto(url);
-  await wait(1000);
-  const buffer = await page.screenshot({ type: 'png' });
-  const base64Image = buffer.toString('base64');
-  cached.set(url, base64Image);
-  return base64Image;
-}
-
-// Docs on event and context https://www.netlify.com/docs/functions/#the-handler-method
 exports.handler = async (event, context) => {
   const qs = event.queryStringParameters;
   const isDev = (process.env.URL == "http://localhost:3000") ? (true) : (false)
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify(isDev)
-  };
-};
+    const pageToScreenshot = qs.url;
+
+    if (!pageToScreenshot) return {
+        statusCode: 400,
+        body: JSON.stringify({ message: 'Page URL not defined' })
+    }
+
+    const browser = await chromium.puppeteer.launch({
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath: await chromium.executablePath,
+        headless: chromium.headless,
+    });
+
+    const page = await browser.newPage();
+
+    await page.goto(pageToScreenshot, { waitUntil: 'networkidle2' });
+
+    const screenshot = await page.screenshot({ encoding: 'binary' });
+
+    await browser.close();
+
+    return {
+        statusCode: 200,
+        body: JSON.stringify({
+            message: `Complete screenshot of ${pageToScreenshot}`,
+            // buffer: screenshot
+        })
+    }
+
+}
