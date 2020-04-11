@@ -46,7 +46,7 @@ export default {
   },
   methods: {
     async fetchSomething() {
-      const apps = await this.$axios.$get('./.netlify/functions/scrape')
+      const apps = await this.$axios.$get('https://paidappsforfree.netlify.com/.netlify/functions/scrape')
       this.apps = apps
     }
   },
